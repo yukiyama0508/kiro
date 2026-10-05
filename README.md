@@ -64,6 +64,20 @@ public/
   fonts/               # Noto Sans JP（PDF用日本語フォント）
 ```
 
+## Kiro University Challenge で実践した内容
+
+本プロジェクトは Kiro University Challenge の各レッスンを通して開発しました。レッスンごとに作成した成果物は以下の通りです。
+
+| # | レッスン | 内容 | 成果物 |
+|---|---------|------|--------|
+| 1 | Spec | 要件・設計・タスクを作成し、仕様駆動で実装 | `.kiro/specs/estimate-generator/`（`requirements.md` / `design.md` / `tasks.md`） |
+| 2 | Steering | 日本語応答・コーディング規約・見積計算ルール（`fileMatch` で適用範囲を限定） | `.kiro/steering/`（`language.md` / `coding-standards.md` / `estimate-rules.md`） |
+| 3 | Hooks | 保存時の ESLint 実行、計算ロジック変更時のテスト自動実行 | `.kiro/hooks/`（`eslint-on-save.json` / `test-on-domain-change.json`） |
+| 4 | PBT（プロパティベーステスト） | fast-check で金額計算の「1円ずれ」バグを発見・修正 | `src/domain/__tests__/`（`estimate.test.ts` ほか） |
+| 5 | Powers | 日本の見積書作成の知識をまとめた Power を作成 | `powers/japanese-estimate/` |
+| 6 | MCP | Playwright MCP でブラウザからの動作確認を自動化 | `.kiro/settings/mcp.json`（詳細は下記「Playwright MCP」） |
+| 7 | Custom agents | 規約チェック用のカスタムエージェントを作成 | `.kiro/agents/estimate-reviewer.json` |
+
 ## Playwright MCP（ブラウザ自動動作確認）
 
 Kiro から Playwright MCP を使うと、ブラウザでアプリを開いて工数入力・金額検証・PDF 書き出しまでを自動で動作確認できます。
