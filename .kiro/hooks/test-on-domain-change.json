@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Test on domain change",
+      "trigger": "PostFileSave",
+      "description": "src/domain/ 配下のファイル保存時に Vitest を自動実行する",
+      "matcher": "src/domain/.*\\.ts$",
+      "action": {
+        "type": "command",
+        "command": "npx vitest run src/domain"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "ESLint on Save",
+      "trigger": "PostFileSave",
+      "description": ".ts/.tsx ファイル保存時に ESLint を自動実行する",
+      "matcher": "\\\\.(ts|tsx)$",
+      "action": {
+        "type": "command",
+        "command": "npm run lint"
+      }
+    }
+  ]
+}
