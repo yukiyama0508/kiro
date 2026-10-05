@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "**/calc*,**/calculation*,**/compute*,**/amount*,**/tax*,**/price*,**/cost*,**/manday*,**/workload*,**/estimate*"
+fileMatchPattern: "src/domain/**"
 ---
 
 # 金額・工数計算ルール
@@ -20,7 +20,7 @@ fileMatchPattern: "**/calc*,**/calculation*,**/compute*,**/amount*,**/tax*,**/pr
 ## 計算ロジックの設計
 
 - 金額・工数の計算ロジックは副作用のない純粋関数として実装し、UIコンポーネントから分離すること
-- 純粋関数は独立したモジュール（例: `src/utils/calc.ts`）にまとめること
+- 純粋関数は `src/domain/` 配下のモジュールにまとめること（例: `src/domain/calc.ts`）
 
 ## テスト
 
