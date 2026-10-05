@@ -87,7 +87,7 @@ export function ManualLineItemList({
                   <td>
                     <input
                       type="number"
-                      min={0}
+                      min={-999999999}
                       max={999999999}
                       value={item.unitPrice}
                       aria-label={`手動追加行 ${index + 1} の単価`}

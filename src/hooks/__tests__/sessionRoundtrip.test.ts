@@ -32,8 +32,6 @@ const sessionDataArb: fc.Arbitrary<SessionData> = fc.record({
     fc.record({
       id: fc.uuid(),
       feature: fc.string(),
-      category: fc.string(),
-      status: fc.constantFrom('新規', '変更', '変更なし', '削除'),
       note: fc.string(),
       manufacturingDays: fc.double({ min: 0, max: 999999, noNaN: true }),
     }),
@@ -79,8 +77,6 @@ describe('sessionStorage ラウンドトリップ', () => {
         {
           id: 'a',
           feature: '認証機能',
-          category: 'A. 認証・ログイン',
-          status: '新規',
           note: 'メモ',
           manufacturingDays: 10,
         },

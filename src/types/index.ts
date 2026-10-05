@@ -2,15 +2,10 @@
 // 工数明細シート関連
 // ============================================================
 
-/** WorkItemの状態 */
-export type WorkItemStatus = '新規' | '変更' | '変更なし' | '削除';
-
 /** 工数明細シートの1行分 */
 export interface WorkItem {
   id: string;               // UUID
   feature: string;          // 機能・要望
-  category: string;         // 対応カテゴリ
-  status: WorkItemStatus;   // 状態
   note: string;             // 備考
   manufacturingDays: number; // 製造工数（人日）
 }
@@ -125,29 +120,6 @@ export interface SessionData {
 // ============================================================
 // 定数
 // ============================================================
-
-/** 対応カテゴリの選択肢 */
-export const WORK_ITEM_CATEGORIES: string[] = [
-  'A. 認証・ログイン',
-  'B. ダッシュボード',
-  'C. データ入力・フォーム',
-  'D. 一覧・検索',
-  'E. 詳細・閲覧',
-  'F. 通知・メール',
-  'G. レポート・集計',
-  'H. 管理機能',
-  'I. API連携',
-  'J. インフラ・設定',
-  'K. その他',
-];
-
-/** WorkItemの状態の選択肢 */
-export const WORK_ITEM_STATUSES: WorkItemStatus[] = [
-  '新規',
-  '変更',
-  '変更なし',
-  '削除',
-];
 
 /** sessionStorageのキー */
 export const SESSION_STORAGE_KEY = 'estimate-generator:session';

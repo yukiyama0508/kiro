@@ -14,8 +14,6 @@ const validHeader: EstimateHeader = {
 const makeWorkItem = (days: number): WorkItem => ({
   id: '1',
   feature: '機能A',
-  category: 'A. 認証・ログイン',
-  status: '新規',
   note: '',
   manufacturingDays: days,
 });
@@ -65,6 +63,16 @@ describe('validateForExport', () => {
 
   it('手動行の単価が上限超過ならエラー', () => {
     const errors = validateForExport(validHeader, [], [makeManualItem(1, 1000000000)]);
+    expect(errors.some((e) => e.field.includes('unitPrice'))).toBe(true);
+  });
+
+  it('手動行の単価が負（値引き）でもエラーにならない', () => {
+    const errors = validateForExport(validHeader, [], [makeManualItem(1, -50000)]);
+    expect(errors.some((e) => e.field.includes('unitPrice'))).toBe(false);
+  });
+
+  it('手動行の単価が下限（-999,999,999）未満ならエラー', () => {
+    const errors = validateForExport(validHeader, [], [makeManualItem(1, -1000000000)]);
     expect(errors.some((e) => e.field.includes('unitPrice'))).toBe(true);
   });
 

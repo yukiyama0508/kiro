@@ -28,8 +28,6 @@ export function WorksheetTable({
           <tr>
             <th>No</th>
             <th>機能・要望</th>
-            <th>対応カテゴリ</th>
-            <th>状態</th>
             <th>備考</th>
             <th>製造工数</th>
             {phaseOrder.map((phase) => (
@@ -42,7 +40,7 @@ export function WorksheetTable({
         <tbody>
           {workItems.length === 0 ? (
             <tr>
-              <td colSpan={phaseOrder.length + 8} className="empty-row">
+              <td colSpan={phaseOrder.length + 6} className="empty-row">
                 明細行がありません。「行を追加」で追加してください。
               </td>
             </tr>

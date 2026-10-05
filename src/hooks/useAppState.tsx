@@ -47,8 +47,6 @@ function emptyWorkItem(): WorkItem {
   return {
     id: genId(),
     feature: '',
-    category: 'A. 認証・ログイン',
-    status: '新規',
     note: '',
     manufacturingDays: 0,
   };

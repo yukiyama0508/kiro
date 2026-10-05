@@ -1,10 +1,5 @@
-import type { ReactNode } from 'react';
-import {
-  WORK_ITEM_CATEGORIES,
-  WORK_ITEM_STATUSES,
-  type WorkItem,
-  type WorkItemPhaseResult,
-} from '../../types';
+import { useState, type ReactNode } from 'react';
+import type { WorkItem, WorkItemPhaseResult } from '../../types';
 import { validateManufacturingDays } from '../../domain/validation';
 import { formatEffort } from '../../utils/format';
 
@@ -21,6 +16,9 @@ interface WorkItemRowProps {
   isLast: boolean;
 }
 
+// 数値（整数または小数、符号なし）のみを許容する入力パターン
+const NUMERIC_PATTERN = /^\d*\.?\d*$/;
+
 export function WorkItemRow({
   item,
   index,
@@ -33,8 +31,19 @@ export function WorkItemRow({
   isFirst,
   isLast,
 }: WorkItemRowProps): ReactNode {
+  // 製造工数はテキスト入力。入力途中の文字列をローカルで保持する
+  const [daysText, setDaysText] = useState<string>(String(item.manufacturingDays));
   const effortError = validateManufacturingDays(item.manufacturingDays);
-  const isUnchanged = item.status === '変更なし';
+
+  const handleDaysChange = (value: string): void => {
+    // 数値以外の文字が含まれる入力は反映しない（テキスト入力で数値のみ許可）
+    if (value !== '' && !NUMERIC_PATTERN.test(value)) {
+      return;
+    }
+    setDaysText(value);
+    const parsed = value === '' ? 0 : Number(value);
+    onUpdate(item.id, { manufacturingDays: parsed });
+  };
 
   return (
     <tr>
@@ -49,32 +58,6 @@ export function WorkItemRow({
         />
       </td>
       <td>
-        <select
-          value={item.category}
-          aria-label={`明細行 ${index + 1} の対応カテゴリ`}
-          onChange={(e) => onUpdate(item.id, { category: e.target.value })}
-        >
-          {WORK_ITEM_CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-      </td>
-      <td>
-        <select
-          value={item.status}
-          aria-label={`明細行 ${index + 1} の状態`}
-          onChange={(e) => onUpdate(item.id, { status: e.target.value as WorkItem['status'] })}
-        >
-          {WORK_ITEM_STATUSES.map((st) => (
-            <option key={st} value={st}>
-              {st}
-            </option>
-          ))}
-        </select>
-      </td>
-      <td>
         <input
           type="text"
           value={item.note}
@@ -85,23 +68,18 @@ export function WorkItemRow({
       </td>
       <td>
         <input
-          type="number"
-          min={0}
-          max={999999}
-          step="0.01"
-          value={item.manufacturingDays}
+          type="text"
+          inputMode="decimal"
+          value={daysText}
           aria-label={`明細行 ${index + 1} の製造工数`}
           className={effortError ? 'input-error' : ''}
-          onChange={(e) => onUpdate(item.id, { manufacturingDays: Number(e.target.value) })}
+          onChange={(e) => handleDaysChange(e.target.value)}
         />
         {effortError && <span className="field-error">{effortError}</span>}
       </td>
       {/* 工程工数（計算結果・読み取り専用） */}
       {phaseOrder.map((phase) => (
-        <td
-          key={phase}
-          className={`cell-effort${isUnchanged ? ' cell-effort--disabled' : ''}`}
-        >
+        <td key={phase} className="cell-effort">
           {formatEffort(phaseResult.phases[phase] ?? 0)}
         </td>
       ))}

@@ -28,7 +28,7 @@ describe('roundEffort', () => {
 
 describe('computePhaseEfforts', () => {
   it('製造工数に係数を掛けて各工程を算出する', () => {
-    const result = computePhaseEfforts(10, DEFAULT_PHASE_COEFFICIENTS, '新規');
+    const result = computePhaseEfforts(10, DEFAULT_PHASE_COEFFICIENTS);
     expect(result['製造']).toBe(10);
     expect(result['進行管理']).toBe(1.5); // 10 * 0.15
     expect(result['要件定義']).toBe(2.0); // 10 * 0.20
@@ -37,23 +37,15 @@ describe('computePhaseEfforts', () => {
     expect(result['リリース']).toBe(0.2); // 10 * 0.02
   });
 
-  it('状態が「変更なし」の場合は全工程が0', () => {
-    const result = computePhaseEfforts(10, DEFAULT_PHASE_COEFFICIENTS, '変更なし');
-    expect(result['製造']).toBe(0);
-    for (const phase of Object.keys(DEFAULT_PHASE_COEFFICIENTS)) {
-      expect(result[phase]).toBe(0);
-    }
-  });
-
   it('製造工数0のとき全工程が0', () => {
-    const result = computePhaseEfforts(0, DEFAULT_PHASE_COEFFICIENTS, '新規');
+    const result = computePhaseEfforts(0, DEFAULT_PHASE_COEFFICIENTS);
     expect(result['製造']).toBe(0);
     expect(result['進行管理']).toBe(0);
   });
 
   it('小数第2位まで四捨五入される', () => {
     // 3.333 * 0.15 = 0.49995 → 0.50
-    const result = computePhaseEfforts(3.333, DEFAULT_PHASE_COEFFICIENTS, '新規');
+    const result = computePhaseEfforts(3.333, DEFAULT_PHASE_COEFFICIENTS);
     expect(result['進行管理']).toBe(0.5);
   });
 
@@ -61,18 +53,8 @@ describe('computePhaseEfforts', () => {
   it('[Property 1] 製造工数>=0ならすべての工程工数>=0', () => {
     fc.assert(
       fc.property(fc.double({ min: 0, max: 999999, noNaN: true }), (days) => {
-        const result = computePhaseEfforts(days, DEFAULT_PHASE_COEFFICIENTS, '新規');
+        const result = computePhaseEfforts(days, DEFAULT_PHASE_COEFFICIENTS);
         return Object.values(result).every((v) => v >= 0);
-      }),
-    );
-  });
-
-  // Property 2: 変更なし行のゼロ化
-  it('[Property 2] 変更なしのとき全工程が0', () => {
-    fc.assert(
-      fc.property(fc.double({ min: 0, max: 999999, noNaN: true }), (days) => {
-        const result = computePhaseEfforts(days, DEFAULT_PHASE_COEFFICIENTS, '変更なし');
-        return Object.values(result).every((v) => v === 0);
       }),
     );
   });
@@ -81,7 +63,7 @@ describe('computePhaseEfforts', () => {
   it('[Property 3] 各工程工数は小数第2位までの値', () => {
     fc.assert(
       fc.property(fc.double({ min: 0, max: 999999, noNaN: true }), (days) => {
-        const result = computePhaseEfforts(days, DEFAULT_PHASE_COEFFICIENTS, '新規');
+        const result = computePhaseEfforts(days, DEFAULT_PHASE_COEFFICIENTS);
         return Object.values(result).every((v) => v === Math.round(v * 100) / 100);
       }),
     );
@@ -89,11 +71,9 @@ describe('computePhaseEfforts', () => {
 });
 
 describe('aggregateWorksheet', () => {
-  const makeItem = (id: string, days: number, status: WorkItem['status'] = '新規'): WorkItem => ({
+  const makeItem = (id: string, days: number): WorkItem => ({
     id,
     feature: `機能${id}`,
-    category: 'A. 認証・ログイン',
-    status,
     note: '',
     manufacturingDays: days,
   });
@@ -105,8 +85,8 @@ describe('aggregateWorksheet', () => {
     expect(result.phaseTotals['進行管理']).toBe(4.5); // 1.5 + 3.0
   });
 
-  it('全行変更なしのとき総合計0', () => {
-    const items = [makeItem('1', 10, '変更なし'), makeItem('2', 20, '変更なし')];
+  it('製造工数0の行だけなら総合計0', () => {
+    const items = [makeItem('1', 0), makeItem('2', 0)];
     const result = aggregateWorksheet(items, DEFAULT_PHASE_COEFFICIENTS);
     expect(result.grandTotal).toBe(0);
   });

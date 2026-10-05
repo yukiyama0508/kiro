@@ -3,7 +3,6 @@ import {
   type PhaseCoefficientMap,
   type WorkItem,
   type WorkItemPhaseResult,
-  type WorkItemStatus,
   type WorksheetAggregate,
 } from '../types';
 
@@ -21,23 +20,12 @@ export function roundEffort(value: number): number {
 
 /**
  * 1行分の工程工数を計算する
- * - status が「変更なし」の場合はすべての工程を 0 にする
  * - 各工程の工数は製造工数 × 係数を小数第2位で四捨五入
  */
 export function computePhaseEfforts(
   manufacturingDays: number,
   coefficients: PhaseCoefficientMap,
-  status: WorkItemStatus,
 ): Record<string, number> {
-  // 「変更なし」はすべての工程を 0 にする
-  if (status === '変更なし') {
-    const zero: Record<string, number> = { 製造: 0 };
-    for (const phase of Object.keys(coefficients)) {
-      zero[phase] = 0;
-    }
-    return zero;
-  }
-
   const result: Record<string, number> = {
     製造: roundEffort(manufacturingDays),
   };
@@ -58,7 +46,7 @@ export function aggregateWorksheet(
   coefficients: PhaseCoefficientMap = DEFAULT_PHASE_COEFFICIENTS,
 ): WorksheetAggregate {
   const perItem: WorkItemPhaseResult[] = items.map((item) => {
-    const phases = computePhaseEfforts(item.manufacturingDays, coefficients, item.status);
+    const phases = computePhaseEfforts(item.manufacturingDays, coefficients);
     const rowTotal = roundEffort(Object.values(phases).reduce((sum, v) => sum + v, 0));
     return { workItemId: item.id, phases, rowTotal };
   });

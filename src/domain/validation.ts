@@ -52,16 +52,11 @@ export function validateForExport(
         message: `手動追加行 ${index + 1}: 数量の上限は 999,999 です。`,
       });
     }
-    if (item.unitPrice < 0) {
+    // 手動追加明細行の単価は負の値（値引き）を許容する
+    if (item.unitPrice < -999999999 || item.unitPrice > 999999999) {
       errors.push({
         field: `manualItem.${index}.unitPrice`,
-        message: `手動追加行 ${index + 1}: 単価は 0 以上の値を入力してください。`,
-      });
-    }
-    if (item.unitPrice > 999999999) {
-      errors.push({
-        field: `manualItem.${index}.unitPrice`,
-        message: `手動追加行 ${index + 1}: 単価の上限は ¥999,999,999 です。`,
+        message: `手動追加行 ${index + 1}: 単価は ¥-999,999,999 〜 ¥999,999,999 の範囲で入力してください。`,
       });
     }
   });
@@ -81,11 +76,12 @@ export function validateManufacturingDays(value: number): string | null {
 
 /**
  * 単価フィールドの単体バリデーション（インライン表示用）
+ * 手動追加明細行の単価は負の値（値引き）を許容する
  */
 export function validateUnitPrice(value: number): string | null {
   if (isNaN(value)) return '数値を入力してください。';
-  if (value < 0) return '0 以上の値を入力してください。';
-  if (value > 999999999) return '単価の上限は ¥999,999,999 です。';
+  if (value < -999999999 || value > 999999999)
+    return '単価は ¥-999,999,999 〜 ¥999,999,999 の範囲で入力してください。';
   return null;
 }
 

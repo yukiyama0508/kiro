@@ -72,13 +72,9 @@ computeTotals(lineAmounts)
 interface WorkItem {
   id: string;                  // UUID
   feature: string;             // 機能・要望
-  category: string;            // 対応カテゴリ
-  status: WorkItemStatus;      // 状態
   note: string;                // 備考
   manufacturingDays: number;   // 製造工数（人日）
 }
-
-type WorkItemStatus = '新規' | '変更' | '変更なし' | '削除';
 
 // 工程係数マップ（設定ファイル由来）
 type PhaseCoefficientMap = Record<string, number>;
@@ -156,8 +152,7 @@ UIに依存しない純粋関数のみを置く。React・DOM への参照は一
 // 1行分の工程工数を計算する（小数第2位・四捨五入）
 export function computePhaseEfforts(
   manufacturingDays: number,
-  coefficients: PhaseCoefficientMap,
-  status: WorkItemStatus
+  coefficients: PhaseCoefficientMap
 ): Record<string, number>;
 
 // 全WorkItemの工程別合計・総合計を集計する
@@ -228,7 +223,6 @@ export function validateForExport(
 
 - 各セルをインライン編集可能な `<input>` / `<select>` で実装する
 - 製造工数の変更は `onChange` で即座にステートを更新し、工程工数は `useMemo` で再計算する
-- 状態が「変更なし」の行は工程工数セルをグレーアウト（`0` 固定表示）する
 - 上下移動ボタンで並び替え（ドラッグ＆ドロップは将来拡張とする）
 
 ### `EstimatePreview`
@@ -569,12 +563,6 @@ interface FieldError {
 
 **Validates: Requirements 2.1, 2.7**
 
-### Property 2: 変更なし行のゼロ化
-
-`status === '変更なし'` の WorkItem に対して、すべての工程工数（製造工数を含む）が `=== 0` であること。
-
-**Validates: Requirements 2.3**
-
 ### Property 3: 工数の端数処理
 
 任意の有効な入力に対して、各工程工数は `Math.round(x * 100) / 100` と等価な小数第2位までの値であること。
@@ -619,8 +607,8 @@ interface FieldError {
 
 | テスト対象 | ファイル | 主なケース |
 |---|---|---|
-| `computePhaseEfforts` | `worksheet.test.ts` | 通常値・変更なし・0・上限値 |
-| `aggregateWorksheet` | `worksheet.test.ts` | 複数行の合計・全行変更なし |
+| `computePhaseEfforts` | `worksheet.test.ts` | 通常値・0・端数処理 |
+| `aggregateWorksheet` | `worksheet.test.ts` | 複数行の合計・空配列 |
 | `computeLineAmount` | `estimate.test.ts` | 円未満切り捨て・0・上限値 |
 | `computeTotals` | `estimate.test.ts` | 消費税切り捨て・空配列 |
 | `parseConfig` | `config.test.ts` | 正常・不正値フォールバック・欠損キー |
