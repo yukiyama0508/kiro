@@ -69,7 +69,7 @@
 1. WHEN App が起動した場合, THE App SHALL `config.json` の読み込みを試み、ファイルが存在しない場合は `config.sample.json` を読み込んで CompanyInfo・PhaseCoefficient・EstimateSection マッピングを初期化すること。
 2. THE ConfigFile SHALL 以下のキーを含む JSON 構造とすること: `companyInfo`（社名・担当者・住所・TEL・メール・登録番号）、`phaseCoefficients`（Phase名をキー、係数を値とするオブジェクト）、`sectionMappings`（EstimateSection名をキー、対応する Phase 名の配列を値とするオブジェクト）。
 3. THE App SHALL `config.json` を `.gitignore` に登録し、リポジトリに含めないこと。`config.sample.json` はサンプル値を含む状態でリポジトリに含めること。
-4. IF `config.json` も `config.sample.json` も読み込みに失敗した場合, THEN THE App SHALL ハードコードされたデフォルト値を使用してアプリを起動し、設定読み込みエラーを開発者コンソールに出力すること。
+4. IF `config.json` も `config.sample.json` も読み込みに失敗した場合, THEN THE App SHALL 設定読み込みエラーを開発者コンソールに出力した上で、ハードコードされたデフォルト値を使用してアプリの起動を継続すること。
 5. FOR ALL ConfigFile の phaseCoefficients エントリ、値は0より大きく1以下の数値でなければならず、範囲外の値が指定された場合は THE App SHALL 該当 Phase のデフォルト係数を使用すること。
 
 ---
@@ -83,7 +83,7 @@
 1. THE App SHALL EstimateView のヘッダー入力フォームに以下のフィールドを提供すること: 発行日、見積番号（最大50文字）、宛先（会社名、最大100文字、「○○株式会社 御中」形式で表示）、件名（最大200文字）、有効期限、備考文（最大400文字）。
 2. THE App SHALL ConfigFile から読み込んだ CompanyInfo（社名・担当者・住所・TEL・メール・登録番号）を見積書に自動表示すること。ユーザーによる画面上での CompanyInfo の編集は不要とする。
 3. WHEN User が発行日フィールドを空白のまま PDF 書き出しを実行しようとした場合, THE App SHALL 発行日は必須であることを示すバリデーションエラーを表示し、書き出しを中止すること。
-4. IF User が有効期限に操作日より過去の日付を入力した場合, THEN THE App SHALL 有効期限が本日以降である旨の警告メッセージを表示すること。ただし、そのまま保存・書き出しを続行できること。
+4. IF User が有効期限に操作日より過去の日付を入力した場合, THEN THE App SHALL 有効期限が本日以降である旨の警告メッセージのみを表示すること。この警告は保存・書き出し操作をブロックせず、そのまま続行できること。
 5. WHEN User がヘッダーフィールドの入力内容を変更した場合, THE App SHALL 500ミリ秒以内に EstimateView のプレビューにヘッダー情報を反映すること。
 
 ---
@@ -102,7 +102,7 @@
 6. THE App SHALL 自動生成明細行とは別に ManualLineItem を手動で追加できる機能を提供すること。ManualLineItem は品名（最大200文字）・数量・単位・単価の入力欄を持ち、金額は自動計算で表示すること。
 7. WHEN User が ManualLineItem の削除ボタンをクリックした場合, THE App SHALL 対象の ManualLineItem を削除し、合計金額を即時に再計算すること。
 8. THE App SHALL 各明細行の金額を「数量 × 単価」の円未満（小数点以下）を切り捨てた整数値で計算すること。
-9. IF 数量または単価に0未満の値または数値以外の文字が入力された場合, THEN THE App SHALL 該当フィールドをエラー状態で表示し、金額の再計算を実行しないこと。
+9. IF 数量または単価に0未満の値または数値以外の文字が入力された場合, THEN THE App SHALL 該当フィールドをエラー状態で表示し、当該行の金額再計算のみを停止すること。直前の有効な値を保持したまま、他の行および見積書全体の合計計算は継続すること。
 
 ---
 
@@ -157,7 +157,7 @@
 
 #### Acceptance Criteria
 
-1. WHEN User が必須フィールド（発行日・宛先会社名・件名）を未入力のまま PDF 書き出しを実行しようとした場合, THE App SHALL 該当フィールドをエラー状態で表示し、エラーメッセージを提示して書き出しを中止すること。
+1. WHEN User が PDF 書き出しを実行しようとした場合, THE App SHALL 必須フィールドエラー（発行日・宛先会社名・件名の未入力）と数値上限エラー（製造工数・数量・単価の上限超過）を同時にすべて表示し、書き出しを中止すること。
 2. IF 製造工数・数量・単価に0未満の値が入力された場合, THEN THE App SHALL 該当フィールドを赤枠でハイライト表示し、「0以上の値を入力してください」というメッセージを表示すること。
 3. IF 単価に999,999,999を超える値が入力された場合, THEN THE App SHALL 入力欄をエラー状態で表示し、「単価の上限は ¥999,999,999 です」というメッセージを表示すること。
 4. IF 製造工数または数量に999,999を超える値が入力された場合, THEN THE App SHALL 入力欄をエラー状態で表示し、「値の上限は 999,999 です」というメッセージを表示すること。
