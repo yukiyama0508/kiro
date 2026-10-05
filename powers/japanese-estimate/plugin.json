@@ -1,7 +1,11 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "japanese-estimate",
   "version": "1.0.0",
   "description": "日本の商習慣に沿った見積書作成の知識をまとめた Power。見積書の記載項目、消費税の端数処理、インボイス制度の登録番号書式、金額計算での浮動小数点誤差の回避方法を提供する。",
+  "author": {
+    "name": "yukiyama0508"
+  },
   "keywords": [
     "見積",
     "見積書",
