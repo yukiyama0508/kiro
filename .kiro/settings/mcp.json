@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "wsl",
+      "args": [
+        "-d",
+        "Ubuntu",
+        "bash",
+        "-c",
+        // commit するとき（プレースホルダに戻す）
+        ". /<ファイルパス>/.nvm/nvm.sh && exec npx -y @playwright/mcp@latest --headless --browser chromium"      ],
+      "disabled": false,
+      "autoApprove": [
+        "browser_navigate",
+        "browser_snapshot",
+        "browser_take_screenshot"
+      ]
+    }
+  }
+}
