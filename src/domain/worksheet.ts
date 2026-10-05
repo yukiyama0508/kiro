@@ -8,11 +8,15 @@ import {
 } from '../types';
 
 /**
- * 工数を小数第2位に四捨五入する
- * 浮動小数点誤差を避けるため整数演算で処理する
+ * 工数を小数第2位に四捨五入する。
+ * `value * 100` が浮動小数点誤差でわずかに下振れする（例: 1.005*100 = 100.49999…）と
+ * Math.round が切り下がってしまうため、相対誤差分を補正してから丸める。
  */
 export function roundEffort(value: number): number {
-  return Math.round(value * 100) / 100;
+  const scaled = value * 100;
+  // 相対的な誤差（EPSILON）を加味して本来の整数境界へ寄せる
+  const corrected = Math.round(scaled + Math.sign(scaled) * Number.EPSILON * scaled);
+  return corrected / 100;
 }
 
 /**

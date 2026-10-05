@@ -625,12 +625,19 @@ interface FieldError {
 | `computeTotals` | `estimate.test.ts` | 消費税切り捨て・空配列 |
 | `parseConfig` | `config.test.ts` | 正常・不正値フォールバック・欠損キー |
 | `validateForExport` | `validation.test.ts` | 全エラー同時検出・正常通過 |
+| `loadSession` | `sessionRoundtrip.test.ts` | 復元・バージョン不一致破棄・不正形式破棄 |
 
 ### プロパティベーステスト（fast-check）
 
-- `computePhaseEfforts`: 任意の非負数入力に対して端数処理・非負性を検証
-- `computeLineAmount`: 任意の数量・単価に対して切り捨て特性を検証
-- `computeTotals`: 任意の金額配列に対して合計整合性を検証
+- `computePhaseEfforts`: 任意の非負数入力に対して端数処理・非負性を検証（Property 1〜3）
+- `computeLineAmount`: 数量を100倍した整数演算での期待値と一致することを検証（Property 5。実装と同じ式では検証しない）
+- `computeTotals`: 任意の金額配列に対して消費税切り捨て・合計整合性を検証（Property 6〜7）
+- `loadSession`: 任意の有効な SessionData の JSON ラウンドトリップで等価性を検証（Property 8）
+
+### 浮動小数点の回帰テスト
+
+- `computeLineAmount(0.29, 50000) === 14500` など、素朴な `Math.floor(q * p)` では 1 円下振れする組み合わせを明示的に検証する
+- `roundEffort(1.005) === 1.01` など、素朴な `Math.round(x * 100)` では切り下がる境界値を明示的に検証する
 
 ### コンポーネントテスト
 

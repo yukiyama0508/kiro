@@ -23,14 +23,28 @@ describe('computeLineAmount', () => {
     expect(computeLineAmount(10, 0)).toBe(0);
   });
 
-  // Property 5: 切り捨て
-  it('[Property 5] computeLineAmount(q,p) === Math.floor(q*p)', () => {
+  // 浮動小数点の誤差で1円ずれないことを確認する回帰テスト
+  it('浮動小数点誤差が出る組み合わせでも正しく計算する', () => {
+    // 0.29 * 50000 = 14499.999999999998 になるが正しくは14500
+    expect(computeLineAmount(0.29, 50000)).toBe(14500);
+    // 0.57 * 50000 = 28499.999999999996 になるが正しくは28500
+    expect(computeLineAmount(0.57, 50000)).toBe(28500);
+  });
+
+  // Property 5: 円未満切り捨て
+  // 実装と同じ式(Math.floor(q*p))で検証すると実装のバグを見逃すため、
+  // 数量を小数第2位までの整数（100倍）に正規化した整数演算で期待値を独立に算出する。
+  it('[Property 5] 数量を100倍した整数演算での期待値と一致する', () => {
     fc.assert(
       fc.property(
-        fc.double({ min: 0, max: 999999, noNaN: true }),
-        fc.double({ min: 0, max: 999999999, noNaN: true }),
-        (q, p) => {
-          return computeLineAmount(q, p) === Math.floor(q * p);
+        // 数量は小数第2位まで（0.00〜999999.99）を整数で表現
+        fc.integer({ min: 0, max: 99999999 }),
+        fc.integer({ min: 0, max: 999999999 }),
+        (qTimes100, p) => {
+          const quantity = qTimes100 / 100;
+          // 期待値: (数量×100) × 単価 を整数で計算してから100で割って切り捨て
+          const expected = Math.floor((qTimes100 * p) / 100);
+          return computeLineAmount(quantity, p) === expected;
         },
       ),
     );

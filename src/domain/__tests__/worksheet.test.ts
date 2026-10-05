@@ -17,6 +17,13 @@ describe('roundEffort', () => {
   it('0は0', () => {
     expect(roundEffort(0)).toBe(0);
   });
+
+  it('浮動小数点誤差が出る境界値を正しく四捨五入する', () => {
+    // 1.005 * 100 = 100.49999... になるため素朴なMath.roundだと1.00になる
+    expect(roundEffort(1.005)).toBe(1.01);
+    // 2.675 も同様の誤差が出る典型例
+    expect(roundEffort(2.675)).toBe(2.68);
+  });
 });
 
 describe('computePhaseEfforts', () => {

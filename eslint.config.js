@@ -17,6 +17,7 @@ const browserGlobals = {
   setTimeout: 'readonly',
   clearTimeout: 'readonly',
   Blob: 'readonly',
+  Storage: 'readonly',
 };
 
 export default [
