@@ -18,7 +18,7 @@ App
 ├── WorksheetView           # 工数明細シート全体
 │   ├── WorksheetToolbar    # 「行を追加」ボタン
 │   ├── WorksheetTable      # WorkItem の一覧テーブル
-│   │   └── WorkItemRow     # 1行分の入力フォーム（カテゴリ・状態はselect）
+│   │   └── WorkItemRow     # 1行分の入力フォーム（機能・備考・製造工数）
 │   └── WorksheetSummary    # 工程別合計・総合計の集計行
 └── EstimateView            # 顧客向け見積書全体
     ├── EstimateHeader      # 発行日・見積番号・宛先・件名・有効期限・備考文の入力
@@ -214,6 +214,24 @@ export function validateForExport(
   manualItems: ManualLineItem[]
 ): FieldError[];
 ```
+
+### `src/domain/csv.ts`
+
+```typescript
+// 工数明細シートをCSV文字列に変換する（RFC 4180準拠のエスケープ）
+// ヘッダー行 + 各WorkItem行 + 合計行を生成する
+export function buildWorksheetCsv(
+  items: WorkItem[],
+  aggregate: WorksheetAggregate,
+  phaseOrder: string[]
+): string;
+
+// 1つのCSVセル値をRFC 4180に従ってエスケープする
+// カンマ・ダブルクォート・改行を含む場合はダブルクォートで囲む
+export function escapeCsvCell(value: string): string;
+```
+
+CSV文字列は純粋関数で生成し、BOM付与・Blob化・ダウンロードはUI層（WorksheetView）で行う。
 
 ---
 

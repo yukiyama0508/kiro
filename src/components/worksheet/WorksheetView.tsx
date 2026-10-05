@@ -2,6 +2,8 @@ import { useMemo, type ReactNode } from 'react';
 import { useAppState } from '../../hooks/useAppState';
 import { useConfig } from '../../hooks/useConfig';
 import { useDerivedState } from '../../hooks/useDerivedState';
+import { buildWorksheetCsv } from '../../domain/csv';
+import { formatDateForFilename, todayIso } from '../../utils/format';
 import { WorksheetTable } from './WorksheetTable';
 import { WorksheetSummary } from './WorksheetSummary';
 
@@ -16,6 +18,24 @@ export function WorksheetView(): ReactNode {
     [config.phaseCoefficients],
   );
 
+  const handleCsvDownload = (): void => {
+    const csv = buildWorksheetCsv(state.workItems, derived.worksheetAggregate, phaseOrder);
+    // Excel での文字化けを防ぐため UTF-8 BOM を先頭に付与する
+    const bom = '\uFEFF';
+    const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const dateStr = state.estimateHeader.issueDate
+      ? formatDateForFilename(state.estimateHeader.issueDate)
+      : formatDateForFilename(todayIso());
+    link.download = `工数明細_${dateStr}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <section className="worksheet-view" aria-label="工数明細シート">
       <div className="worksheet-toolbar">
@@ -25,6 +45,14 @@ export function WorksheetView(): ReactNode {
           onClick={() => dispatch({ type: 'ADD_WORK_ITEM' })}
         >
           ＋ 行を追加
+        </button>
+        <button
+          type="button"
+          className="button-secondary"
+          aria-label="工数明細をCSVダウンロード"
+          onClick={handleCsvDownload}
+        >
+          CSV ダウンロード
         </button>
         <span className="worksheet-count">明細行数: {state.workItems.length}</span>
       </div>

@@ -1,4 +1,4 @@
-# Implementation Plan
+﻿# Implementation Plan
 
 ## Overview
 
@@ -15,7 +15,7 @@
     { "wave": 4, "tasks": [4] },
     { "wave": 5, "tasks": [5] },
     { "wave": 6, "tasks": [6, 7] },
-    { "wave": 7, "tasks": [8] },
+    { "wave": 7, "tasks": [8, 10] },
     { "wave": 8, "tasks": [9] }
   ]
 }
@@ -34,14 +34,14 @@
   - **要件との対応:** Requirement 3
 
 - [ ] 2. 型定義の作成
-  - `src/types/index.ts` に `WorkItem`・`WorkItemStatus`・`WorkItemPhaseResult` を定義する
+  - `src/types/index.ts` に `WorkItem`・`WorkItemPhaseResult` を定義する
   - `src/types/index.ts` に `EstimateHeader`・`ManualLineItem`・`DailyRateMap` を定義する
   - `src/types/index.ts` に `CompanyInfo`・`AppConfig`・`SessionData` を定義する
   - `src/types/index.ts` に `WorksheetAggregate`・`LineAmountResult`・`TotalsResult`・`FieldError` を定義する
   - **要件との対応:** 全要件の基盤
 
 - [ ] 3. ドメインロジックの実装とテスト
-  - `src/domain/worksheet.ts` — `computePhaseEfforts` を実装する（係数計算・四捨五入・変更なしゼロ化）
+  - `src/domain/worksheet.ts` — `computePhaseEfforts` を実装する（係数計算・四捨五入）
   - `src/domain/worksheet.ts` — `aggregateWorksheet` を実装する（工程別合計・総合計）
   - `src/domain/__tests__/worksheet.test.ts` — `computePhaseEfforts` の単体テストとプロパティテストを書く
   - `src/domain/__tests__/worksheet.test.ts` — `aggregateWorksheet` の単体テストを書く
@@ -71,9 +71,8 @@
   - **要件との対応:** Requirement 4.5
 
 - [ ] 6. 工数明細シート（WorksheetView）
-  - `src/components/worksheet/WorkItemRow.tsx` — No・機能要望・カテゴリ(select)・状態(select)・備考・製造工数の入力行を実装する
-  - `WorkItemRow` — 状態「変更なし」のとき工程工数セルをグレーアウト（0固定表示）する
-  - `WorkItemRow` — 製造工数のエラー状態表示（0未満・非数値）を実装する
+  - `src/components/worksheet/WorkItemRow.tsx` — No・機能要望・備考・製造工数の入力行を実装する
+  - `WorkItemRow` — 製造工数をテキスト入力（数値のみ許可）とし、0未満・非数値のエラー状態表示を実装する
   - `WorkItemRow` — 上下移動ボタンによる並び替えを実装する（並び替え後に No を振り直す）
   - `src/components/worksheet/WorksheetTable.tsx` — WorkItemRow の一覧と「行を追加」ボタンを実装する
   - `src/components/worksheet/WorksheetSummary.tsx` — 工程別合計・総合計の集計行を実装する
@@ -110,6 +109,14 @@
   - バリデーションエラーの赤枠スタイルと 200ms 以内の解除アニメーションを実装する
   - PDF 書き出しボタンのローディングスピナーを実装する
   - **要件との対応:** Requirement 6.5, 9
+
+- [ ] 10. 工数明細の CSV ダウンロード
+  - `src/domain/csv.ts` — `escapeCsvCell`（RFC 4180準拠のセルエスケープ）を実装する
+  - `src/domain/csv.ts` — `buildWorksheetCsv`（ヘッダー行・各WorkItem行・合計行の生成）を実装する
+  - `src/domain/__tests__/csv.test.ts` — エスケープ・合計行・空データの単体テストを書く
+  - `src/components/worksheet/WorksheetView.tsx` — 「CSV ダウンロード」ボタンを追加し、UTF-8（BOM付き）の Blob を生成してダウンロードする
+  - ファイル名を `工数明細_{{発行日}}.csv` 形式で設定する（未入力時は操作日の日付）
+  - **要件との対応:** Requirement 10
 
 ## Notes
 

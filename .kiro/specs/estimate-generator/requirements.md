@@ -23,6 +23,7 @@
 - **CompanyInfo**: 設定ファイルから読み込む自社情報（社名・担当者・住所・TEL・メール・登録番号）
 - **ConfigFile**: アプリの動作を制御するJSONファイル（PhaseCoefficient・EstimateSection マッピング・CompanyInfoを含む）
 - **PDF_Exporter**: 見積書をPDFファイルとして書き出す機能
+- **CSV_Exporter**: 工数明細シートをCSVファイルとして書き出す機能
 
 ---
 
@@ -53,10 +54,10 @@
 1. THE App SHALL 各 Phase の工数を「製造工数 × PhaseCoefficient」として自動計算すること。デフォルトの PhaseCoefficient は以下の通りとする: 進行管理 15%、要件定義 20%、基本設計 30%、レビュー 5%、テスト設計 5%、テスト 15%、ユーザテストFB 2%、リリース 2%。
 2. WHEN WorkItem の製造工数が変更された場合, THE App SHALL 当該 WorkItem の全 Phase 工数を 500ミリ秒以内に再計算して表示すること。
 3. WHILE WorkItem の状態が「変更なし」である場合, THE App SHALL 当該 WorkItem の全 Phase 工数（製造工数を含む）を0として表示すること。
-3. THE App SHALL 各 WorkItem の行合計工数（全 Phase 工数の合計）を表示すること。
-4. THE App SHALL WorksheetView の最下行に全 WorkItem の工程別合計工数および総合計工数を集計して表示すること。
-5. WHERE ConfigFile に PhaseCoefficient の定義が存在する場合, THE App SHALL ConfigFile の値を優先してデフォルト係数を上書きすること。
-6. THE App SHALL 各 Phase の工数（製造工数 × PhaseCoefficient の結果）を小数第2位まで表示・計算し、小数第3位以下は四捨五入すること。
+4. THE App SHALL 各 WorkItem の行合計工数（全 Phase 工数の合計）を表示すること。
+5. THE App SHALL WorksheetView の最下行に全 WorkItem の工程別合計工数および総合計工数を集計して表示すること。
+6. WHERE ConfigFile に PhaseCoefficient の定義が存在する場合, THE App SHALL ConfigFile の値を優先してデフォルト係数を上書きすること。
+7. THE App SHALL 各 Phase の工数（製造工数 × PhaseCoefficient の結果）を小数第2位まで表示・計算し、小数第3位以下は四捨五入すること。
 
 ---
 
@@ -164,3 +165,19 @@
 5. WHEN User がバリデーションエラーのあるフィールドを正しい値に修正した場合, THE App SHALL バリデーションエラー表示を200ミリ秒以内に解除すること。
 6. WHILE バリデーションエラーが存在する場合, THE App SHALL PDF 書き出しボタンを無効化すること。
 
+---
+
+### Requirement 10: 工数明細の CSV ダウンロード
+
+**User Story:** 見積担当者として、工数明細シートの内容を CSV ファイルとしてダウンロードしたい。そうすることで、Excel 等で工数データを再利用・共有できる。
+
+#### Acceptance Criteria
+
+1. THE App SHALL WorksheetView に「CSV ダウンロード」ボタンを提供すること。
+2. WHEN User が「CSV ダウンロード」ボタンをクリックした場合, THE App SHALL 現在の工数明細データを CSV ファイルとしてブラウザのダウンロードとして提供すること。
+3. THE App SHALL CSV のヘッダー行と各 WorkItem 行に以下の列を出力すること: No、機能・要望、備考、製造工数、各 Phase の工数（進行管理・要件定義・基本設計・レビュー・テスト設計・テスト・ユーザテストFB・リリース・製造）、行合計。
+4. THE App SHALL CSV の最終行に工程別合計工数および総合計工数を集計した合計行を出力すること。
+5. THE App SHALL CSV のセル値にカンマ・ダブルクォート・改行が含まれる場合、RFC 4180 に従ってダブルクォートで囲み、内部のダブルクォートを 2 つに重ねてエスケープすること。
+6. THE App SHALL 日本語の文字化けを防ぐため、CSV ファイルを UTF-8（BOM 付き）で出力すること。
+7. THE App SHALL 出力 CSV のファイル名を `工数明細_{{発行日}}.csv` 形式で設定すること（例: `工数明細_20250101.csv`）。発行日が未入力の場合は操作日の日付を使用すること。
+8. THE App SHALL 工程工数の数値を小数第2位まで（四捨五入後の値）で出力すること。
