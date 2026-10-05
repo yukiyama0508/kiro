@@ -7,8 +7,8 @@
         "Ubuntu",
         "bash",
         "-c",
-        // commit するとき（プレースホルダに戻す）
-        ". /<ファイルパス>/.nvm/nvm.sh && exec npx -y @playwright/mcp@latest --headless --browser chromium"      ],
+        ". $HOME/.nvm/nvm.sh && exec npx -y @playwright/mcp@latest --headless --browser chromium"
+      ],
       "disabled": false,
       "autoApprove": [
         "browser_navigate",
