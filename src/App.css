@@ -1,0 +1,612 @@
+/* ============================================================
+   全体レイアウト
+   ============================================================ */
+:root {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-error: #dc2626;
+  --color-warning: #d97706;
+  --color-border: #d1d5db;
+  --color-bg: #f8fafc;
+  --color-text: #1a1a1a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.app-header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header h1 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.app-main {
+  padding: 20px 24px;
+}
+
+.app-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 16px;
+}
+
+/* ============================================================
+   タブ
+   ============================================================ */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+}
+
+.tab-button {
+  padding: 8px 20px;
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  background: #f1f5f9;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.tab-button--active {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.tab-button:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   ボタン共通
+   ============================================================ */
+.button-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.button-primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.button-primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.button-delete {
+  background: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   工数明細シート
+   ============================================================ */
+.worksheet-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.worksheet-count {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* 工程列が多いため横スクロール対応 */
+.worksheet-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.worksheet-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 1200px;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.worksheet-table th,
+.worksheet-table td {
+  border: 1px solid var(--color-border);
+  padding: 4px 6px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.worksheet-table thead th {
+  background: #eff6ff;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.worksheet-table input,
+.worksheet-table select {
+  width: 100%;
+  min-width: 60px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.cell-no {
+  text-align: center;
+  width: 40px;
+}
+
+.cell-effort {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell-effort--disabled {
+  color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.cell-row-total,
+.cell-grand-total {
+  font-weight: bold;
+  background: #f0fdf4;
+}
+
+.cell-actions {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.cell-actions button {
+  padding: 2px 6px;
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cell-actions button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.empty-row {
+  text-align: center;
+  color: #94a3b8;
+  padding: 20px;
+}
+
+.worksheet-summary-wrapper {
+  margin-top: 8px;
+  overflow-x: auto;
+}
+
+.worksheet-summary {
+  min-width: 800px;
+}
+
+.worksheet-summary th {
+  background: #f1f5f9;
+}
+
+.summary-label {
+  font-weight: bold;
+}
+
+/* ============================================================
+   見積書ビュー（2カラム）
+   ============================================================ */
+.estimate-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1023px) {
+  .estimate-view {
+    grid-template-columns: 1fr;
+  }
+}
+
+.estimate-editor > div {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.estimate-editor h2 {
+  font-size: 15px;
+  margin: 0 0 12px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  gap: 4px;
+}
+
+.form-full-width {
+  grid-column: 1 / -1;
+}
+
+.form-grid input,
+.form-grid textarea {
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+/* ============================================================
+   人日単価設定
+   ============================================================ */
+.rate-default {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  max-width: 240px;
+}
+
+.rate-default input {
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.rate-overrides {
+  margin-top: 12px;
+}
+
+.rate-overrides summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+.rate-override-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.rate-override-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.rate-override-grid input {
+  padding: 5px 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+/* ============================================================
+   手動追加明細
+   ============================================================ */
+.manual-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.manual-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.manual-table th,
+.manual-table td {
+  border: 1px solid var(--color-border);
+  padding: 4px 6px;
+}
+
+.manual-table input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.cell-amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.empty-note {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* ============================================================
+   バリデーション表示
+   ============================================================ */
+.input-error {
+  border-color: var(--color-error) !important;
+  background: #fef2f2;
+}
+
+.input-warning {
+  border-color: var(--color-warning) !important;
+}
+
+.field-error {
+  display: block;
+  color: var(--color-error);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.field-warning {
+  display: block;
+  color: var(--color-warning);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid var(--color-error);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--color-error);
+  font-size: 13px;
+}
+
+.error-message ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+/* ============================================================
+   PDF書き出し
+   ============================================================ */
+.pdf-export {
+  text-align: center;
+}
+
+.button-export {
+  font-size: 16px;
+  padding: 12px 32px;
+}
+
+.pdf-export-error {
+  margin-top: 10px;
+  color: var(--color-error);
+  font-size: 13px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================
+   見積書プレビュー（A4縦比率）
+   ============================================================ */
+.estimate-preview-pane {
+  position: sticky;
+  top: 80px;
+}
+
+.estimate-preview {
+  overflow: auto;
+}
+
+.preview-page {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* A4縦比率 210:297 */
+  aspect-ratio: 210 / 297;
+  padding: 7%;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.preview-title {
+  font-size: 24px;
+  letter-spacing: 6px;
+  margin: 0;
+}
+
+.preview-meta {
+  text-align: right;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.preview-parties {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.preview-client-name {
+  font-size: 15px;
+  font-weight: bold;
+  border-bottom: 1px solid #333;
+  padding-bottom: 4px;
+}
+
+.preview-company {
+  text-align: right;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.preview-company-name {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.preview-subject {
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.preview-grand-amount {
+  display: flex;
+  align-items: center;
+  background: #f0f4f8;
+  border-left: 4px solid var(--color-primary);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.preview-grand-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin-right: 14px;
+}
+
+.preview-grand-value {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.preview-grand-note {
+  font-size: 11px;
+  margin-left: 6px;
+}
+
+.preview-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+.preview-table th {
+  background: var(--color-primary);
+  color: #ffffff;
+  padding: 6px;
+  text-align: left;
+}
+
+.preview-table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 5px 6px;
+}
+
+.col-qty,
+.col-price,
+.col-amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.preview-totals {
+  align-self: flex-end;
+  width: 50%;
+}
+
+.preview-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 11px;
+}
+
+.preview-total-row--grand {
+  border-top: 1.5px solid #333;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.preview-notes {
+  margin-top: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+}
+
+.preview-notes-label {
+  font-size: 10px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.preview-notes-body {
+  font-size: 10px;
+  white-space: pre-wrap;
+}

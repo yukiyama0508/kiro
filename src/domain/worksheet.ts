@@ -1,0 +1,73 @@
+import {
+  DEFAULT_PHASE_COEFFICIENTS,
+  type PhaseCoefficientMap,
+  type WorkItem,
+  type WorkItemPhaseResult,
+  type WorkItemStatus,
+  type WorksheetAggregate,
+} from '../types';
+
+/**
+ * 工数を小数第2位に四捨五入する
+ * 浮動小数点誤差を避けるため整数演算で処理する
+ */
+export function roundEffort(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+/**
+ * 1行分の工程工数を計算する
+ * - status が「変更なし」の場合はすべての工程を 0 にする
+ * - 各工程の工数は製造工数 × 係数を小数第2位で四捨五入
+ */
+export function computePhaseEfforts(
+  manufacturingDays: number,
+  coefficients: PhaseCoefficientMap,
+  status: WorkItemStatus,
+): Record<string, number> {
+  // 「変更なし」はすべての工程を 0 にする
+  if (status === '変更なし') {
+    const zero: Record<string, number> = { 製造: 0 };
+    for (const phase of Object.keys(coefficients)) {
+      zero[phase] = 0;
+    }
+    return zero;
+  }
+
+  const result: Record<string, number> = {
+    製造: roundEffort(manufacturingDays),
+  };
+
+  for (const [phase, coeff] of Object.entries(coefficients)) {
+    result[phase] = roundEffort(manufacturingDays * coeff);
+  }
+
+  return result;
+}
+
+/**
+ * 全 WorkItem の工程別合計・総合計を集計する
+ * phaseTotals には「製造」も含む
+ */
+export function aggregateWorksheet(
+  items: WorkItem[],
+  coefficients: PhaseCoefficientMap = DEFAULT_PHASE_COEFFICIENTS,
+): WorksheetAggregate {
+  const perItem: WorkItemPhaseResult[] = items.map((item) => {
+    const phases = computePhaseEfforts(item.manufacturingDays, coefficients, item.status);
+    const rowTotal = roundEffort(Object.values(phases).reduce((sum, v) => sum + v, 0));
+    return { workItemId: item.id, phases, rowTotal };
+  });
+
+  // 工程別合計
+  const phaseTotals: Record<string, number> = {};
+  for (const { phases } of perItem) {
+    for (const [phase, effort] of Object.entries(phases)) {
+      phaseTotals[phase] = roundEffort((phaseTotals[phase] ?? 0) + effort);
+    }
+  }
+
+  const grandTotal = roundEffort(perItem.reduce((sum, r) => sum + r.rowTotal, 0));
+
+  return { perItem, phaseTotals, grandTotal };
+}
